@@ -1,41 +1,30 @@
-package com.meli.partidasfutebol.model;
+package com.meli.partidasfutebol.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "partida")
-public class Partida {
-    @Id
-    @Column(name = "idPartida")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column
+@NoArgsConstructor
+@AllArgsConstructor
+public class PartidaDto {
+    private Long id;
     private String nomeClubeMandante;
-
-    @Column
-    private int  resultadoClubeMandante;
-
-    @Column
+    private int resultadoClubeMandante;
     private String nomeClubeVisitante;
-
-    @Column
-    private int  resultadoClubeVisitante;
-
-    @Column
+    private int resultadoClubeVisitante;
+    @JsonFormat(pattern = "dd/MM/yyyy - HH:mm")
     private LocalDateTime dataHora;
-
-    @Column
     private String estadio;
 
-    public void setId(Long id){
-        this.id = id;
-    }
-    public Long getId(){
+
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNomeClubeMandante() {
@@ -73,6 +62,7 @@ public class Partida {
     public LocalDateTime getDataHora() {
         return dataHora;
     }
+
     public void setDataHora(LocalDateTime dataHora) {
         this.dataHora = dataHora;
     }
