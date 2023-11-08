@@ -13,22 +13,22 @@ public class Partida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(nullable = false)
     private String nomeClubeMandante;
 
-    @Column
+    @Column(nullable = false)
     private int  resultadoClubeMandante;
 
-    @Column
+    @Column(nullable = false)
     private String nomeClubeVisitante;
 
-    @Column
+    @Column(nullable = false)
     private int  resultadoClubeVisitante;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime dataHora;
 
-    @Column
+    @Column(nullable = false)
     private String estadio;
 
     public void setId(Long id){
