@@ -36,7 +36,8 @@ public class PartidaService {
         return partidaRepository.findById(id)
                 .map(record -> {
                     partidaRepository.deleteById(id);
-                    return ResponseEntity.ok().build();
+                    return ResponseEntity.ok().body("Partida deletada do banco de dados!");
+                    //return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
     }
 

@@ -1,10 +1,14 @@
 package com.meli.partidasfutebol.controller;
 
 import com.meli.partidasfutebol.dto.PartidaDto;
+import com.meli.partidasfutebol.model.Partida;
+import com.meli.partidasfutebol.repository.PartidaRepository;
 import com.meli.partidasfutebol.service.PartidaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -14,14 +18,37 @@ public class PartidaController {
     @Autowired
     private PartidaService partidaService;
 
-   // @GetMapping("buscaPorEstadio")
-   // public ResponseEntity<Object> bus
+    @Autowired
+    private PartidaRepository partidaRepository;
 
+    @GetMapping("porEstadio/{estadio}")
+    public ResponseEntity<?> listarPartidas(@PathVariable("estadio")String estadio){
+        return ResponseEntity.ok(this.partidaRepository.buscaPartidasPorEstadio(estadio));
+    }
+
+    @GetMapping("porClube/{clube}")
+    public ResponseEntity<?> buscaPartidasPorClube(@PathVariable("clube")String clube){
+        return ResponseEntity.ok(this.partidaRepository.buscaPartidasPorClube(clube));
+    }
+
+    @GetMapping("porClubeMandante/{clube}")
+    public ResponseEntity<?> buscaPartidasPorClubeMandante(@PathVariable("clube")String clube){
+        return ResponseEntity.ok(this.partidaRepository.buscaPartidasPorClubeMandante(clube));
+    }
+
+    @GetMapping("porClubeVisitante/{clube}")
+    public ResponseEntity<?> buscaPartidasPorClubeVisitante(@PathVariable("clube")String clube){
+        return ResponseEntity.ok(this.partidaRepository.buscaPartidasPorClubeVisitante(clube));
+    }
+
+    @GetMapping("partidaSemGols")
+    public List<Partida> partidaSemGols(){
+       return partidaRepository.buscaPartidaSemGols();
+    }
 
     @PostMapping
     public String adicionaPartida(@RequestBody PartidaDto partidaDto) {
         return partidaService.adicionaPartida(partidaDto);
-
     }
 
     @PutMapping(value="/{id}")

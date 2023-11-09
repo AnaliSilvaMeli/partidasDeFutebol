@@ -12,17 +12,4 @@ public class PartidasFutebolApplication {
     public static void main(String[] args) {
         SpringApplication.run(PartidasFutebolApplication.class, args);
     }
-    @Bean
-    CommandLineRunner commandLineRunner(PartidaRepository partidaRepository) {
-        return args -> {
-            partidaRepository
-                    .buscaPartidasPorEstadio("Maracana")
-                    .ifPresentOrElse(
-                            partida -> { System.out.println(
-                                    "Partida: "
-                                            + partida.getNomeClubeMandante() + " X " + partida.getNomeClubeVisitante()); },
-                            () -> System.out.println("Estádio não foi encontrado"));
-
-        };
-    }
 }
