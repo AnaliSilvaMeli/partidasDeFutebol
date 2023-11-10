@@ -11,6 +11,9 @@ public interface PartidaRepository extends JpaRepository<Partida, Long> {
     @Query("SELECT p FROM Partida p WHERE p.resultadoClubeMandante = 0 AND p.resultadoClubeVisitante = 0")
     List<Partida> buscaPartidaSemGols();
 
+    @Query("SELECT p FROM Partida p WHERE ABS(p.resultadoClubeMandante - p.resultadoClubeVisitante) >= 3")
+    List<Partida> buscaGoleada();
+
     @Query("SELECT p FROM Partida p WHERE p.estadio = ?1" )
     List<Partida> buscaPartidasPorEstadio(String estadio);
 

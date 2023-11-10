@@ -46,6 +46,11 @@ public class PartidaController {
        return partidaRepository.buscaPartidaSemGols();
     }
 
+    @GetMapping("buscaGoleada")
+    public List<Partida> buscaGoleada(){
+        return partidaRepository.buscaGoleada();
+    }
+
     @PostMapping
     public String adicionaPartida(@RequestBody PartidaDto partidaDto) {
         return partidaService.adicionaPartida(partidaDto);
