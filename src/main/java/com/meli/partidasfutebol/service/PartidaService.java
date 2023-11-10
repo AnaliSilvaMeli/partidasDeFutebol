@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -17,6 +21,26 @@ public class PartidaService {
     private PartidaRepository partidaRepository;
 
     public String adicionaPartida(PartidaDto partidaDto){
+        LocalDateTime dataHoraAtual = LocalDateTime.now();
+
+        if(partidaDto.getDataHora().isAfter(dataHoraAtual)){
+           return "A data e hora da partida não pode ser maior que a data e hora atual!";
+        }
+
+        LocalDateTime horaCadastrada = partidaDto.getDataHora();
+        String dataHoraString = horaCadastrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        String apenasHoraString = dataHoraString.substring(11, 19);
+        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
+        LocalTime horaMinimo = LocalTime.parse("08:00");
+        if(apenasHora.isBefore(horaMinimo)){
+            return "O horário de início da partida não pode ser antes das 08:00!";
+        }
+
+        LocalTime dataHoraMaximo = LocalTime.parse("22:00");
+        if(apenasHora.isAfter(dataHoraMaximo)){
+            return "O horário de início da partida não pode ser após às 22:00!";
+        }
+
         Partida partida = new Partida();
         partida.setNomeClubeMandante(partidaDto.getNomeClubeMandante());
         partida.setResultadoClubeMandante(partidaDto.getResultadoClubeMandante());
@@ -25,7 +49,7 @@ public class PartidaService {
         partida.setDataHora(partidaDto.getDataHora());
         partida.setEstadio(partidaDto.getEstadio());
         partidaRepository.save(partida);
-        return "Partida" + partida.getId() + " adicionada!";
+        return "Partida" + partida.getId() + " adicionada! ";
     }
 
     public ResponseEntity<?> deletaPartida(long id) {
@@ -37,11 +61,30 @@ public class PartidaService {
                 .map(record -> {
                     partidaRepository.deleteById(id);
                     return ResponseEntity.ok().body("Partida deletada do banco de dados!");
-                    //return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     public ResponseEntity atualizaPartida(long id, PartidaDto partidaDto) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        if(partidaDto.getDataHora().isAfter(localDateTime)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário da partida não pode ser maior que o horário atual!");
+        }
+
+        LocalDateTime horaCadastrada = partidaDto.getDataHora();
+        String dataHoraString = horaCadastrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        String apenasHoraString = dataHoraString.substring(11, 19);
+        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
+        LocalTime horaMinimo = LocalTime.parse("08:00");
+        if(apenasHora.isBefore(horaMinimo)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário de início da partida não pode ser antes das 08:00!");
+        }
+
+        LocalTime dataHoraMaximo = LocalTime.parse("22:00");
+        if(apenasHora.isAfter(dataHoraMaximo)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário de início da partida não pode ser após às 22:00!");
+        }
+
         Optional<Partida> partidaOptional = partidaRepository.findById(id);
         if(!partidaOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Partida não encontrada!");

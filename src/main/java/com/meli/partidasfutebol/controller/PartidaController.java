@@ -4,8 +4,10 @@ import com.meli.partidasfutebol.dto.PartidaDto;
 import com.meli.partidasfutebol.model.Partida;
 import com.meli.partidasfutebol.repository.PartidaRepository;
 import com.meli.partidasfutebol.service.PartidaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,13 +54,13 @@ public class PartidaController {
     }
 
     @PostMapping
-    public String adicionaPartida(@RequestBody PartidaDto partidaDto) {
+    public String adicionaPartida(@Valid @RequestBody PartidaDto partidaDto) {
         return partidaService.adicionaPartida(partidaDto);
     }
 
     @PutMapping(value="/{id}")
     public ResponseEntity atualizaPartida(@PathVariable("id") long id,
-                                 @RequestBody PartidaDto partidaDto) {
+                                @Valid @RequestBody PartidaDto partidaDto) {
         return partidaService.atualizaPartida(id, partidaDto);
     }
 

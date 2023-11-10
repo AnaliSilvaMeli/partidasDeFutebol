@@ -1,7 +1,9 @@
 package com.meli.partidasfutebol.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -13,13 +15,16 @@ public class PartidaDto {
     private Long id;
     @NotBlank
     private String nomeClubeMandante;
-    @NotBlank
+
+    @NotNull
+    @Min(value = 0)
     private int resultadoClubeMandante;
     @NotBlank
     private String nomeClubeVisitante;
-    @NotBlank
+    @NotNull
+    @Min(value = 0)
     private int resultadoClubeVisitante;
-    @NotBlank
+
     @JsonFormat(pattern = "dd/MM/yyyy - HH:mm")
     private LocalDateTime dataHora;
     @NotBlank
