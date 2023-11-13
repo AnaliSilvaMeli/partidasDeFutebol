@@ -21,8 +21,9 @@ public class PartidaService {
     private PartidaRepository partidaRepository;
 
     public String adicionaPartida(PartidaDto partidaDto){
-        LocalDateTime dataHoraAtual = LocalDateTime.now();
 
+
+        LocalDateTime dataHoraAtual = LocalDateTime.now();
         if(partidaDto.getDataHora().isAfter(dataHoraAtual)){
            return "A data e hora da partida não pode ser maior que a data e hora atual!";
         }
