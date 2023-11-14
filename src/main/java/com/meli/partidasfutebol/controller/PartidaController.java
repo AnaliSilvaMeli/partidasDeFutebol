@@ -56,13 +56,6 @@ public class PartidaController {
         return partidaRepository.buscaGoleada();
     }
 
-    //@PostMapping
-    //public List<Partida> verificaDuplicidadeEstadio(@Valid @RequestBody PartidaDto partidaDto){
-    //    return partidaRepository.verificaDuplicidadeEstadio(partidaDto);
-    //}
-    //public String adicionaPartida(@Valid @RequestBody PartidaDto partidaDto) {
-    //    return partidaService.adicionaPartida(partidaDto);
-    //}
     @PostMapping
     public String adicionaPartida(@Valid @RequestBody PartidaDto partidaDto) {
         return partidaService.adicionaPartida(partidaDto);

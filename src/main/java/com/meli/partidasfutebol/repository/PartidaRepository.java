@@ -31,6 +31,9 @@ public interface PartidaRepository extends JpaRepository<Partida, Long> {
     @Query("SELECT p FROM Partida p WHERE p.nomeClubeVisitante = ?1")
     List<Partida> buscaPartidasPorClubeVisitante(String clube);
 
-    //@Query(value = "SELECT p FROM Partida p WHERE p.estadio = ?1 AND p.dataHora >= '2023/11/13T00:00:00'")
-    //List<Partida> verificaDuplicidadeEstadio(PartidaDto partidaDto);
+    @Query(value = "SELECT p FROM Partida p WHERE p.estadio = :estadioNome AND CAST(p.dataHora AS DATE) = CAST(:dateTime AS DATE)")
+    List<Partida> verificaDuplicidadePartidaPorEstadio(String estadioNome, LocalDateTime dateTime);
+
+    @Query(value = "SELECT p FROM Partida p WHERE (p.nomeClubeMandante = :clubeMandante OR p.nomeClubeVisitante = :clubeVisitante) AND CAST(p.dataHora AS DATE) BETWEEN CAST(:dataVerificadaMinima AS DATE) AND CAST(:dataVerificadaMaxima AS DATE)")
+    List<Partida> verificaDuplicidadePartidaPorClube(String clubeMandante, String clubeVisitante, LocalDateTime dataVerificadaMinima, LocalDateTime dataVerificadaMaxima);
 }

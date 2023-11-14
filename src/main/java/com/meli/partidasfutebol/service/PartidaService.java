@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,8 +21,25 @@ public class PartidaService {
     @Autowired
     private PartidaRepository partidaRepository;
 
-    public String adicionaPartida(PartidaDto partidaDto){
+    private Boolean verificaDuplicidadePartidaPorEstadio(String estadioNome , LocalDateTime dateTime){
+        List<Partida> listaPartidasEstadio = partidaRepository.verificaDuplicidadePartidaPorEstadio(estadioNome,dateTime);
+        return listaPartidasEstadio.size() > 0;
+    }
 
+    private Boolean verificaDuplicidadePartidaPorClube(String clubeMandante, String clubeVisitante, LocalDateTime dateTime){
+        LocalDateTime dataVerificadaMinima = dateTime.minusDays(2);
+        LocalDateTime dataVerificadaMaxima = dateTime.plusDays(2);
+        List<Partida> listaPartidasClube = partidaRepository.verificaDuplicidadePartidaPorClube(clubeMandante, clubeVisitante, dataVerificadaMinima, dataVerificadaMaxima);
+        return listaPartidasClube.size() > 0;
+    }
+    public String adicionaPartida(PartidaDto partidaDto){
+        if(verificaDuplicidadePartidaPorEstadio(partidaDto.getEstadio(), partidaDto.getDataHora())){
+            return "Não pode registrar a partida, pois já existe partida neste dia para o estádio informado";
+        }
+
+        if(verificaDuplicidadePartidaPorClube(partidaDto.getNomeClubeMandante(), partidaDto.getNomeClubeVisitante(), partidaDto.getDataHora())){
+            return "Não pode registrar a partida, pois já existe partida para este clube no período de dois dias";
+        }
 
         LocalDateTime dataHoraAtual = LocalDateTime.now();
         if(partidaDto.getDataHora().isAfter(dataHoraAtual)){
@@ -33,6 +51,8 @@ public class PartidaService {
         String apenasHoraString = dataHoraString.substring(11, 19);
         LocalTime apenasHora = LocalTime.parse(apenasHoraString);
         LocalTime horaMinimo = LocalTime.parse("08:00");
+
+        LocalDateTime teste = partidaDto.getDataHora().minusDays(2);
         if(apenasHora.isBefore(horaMinimo)){
             return "O horário de início da partida não pode ser antes das 08:00!";
         }
@@ -50,7 +70,7 @@ public class PartidaService {
         partida.setDataHora(partidaDto.getDataHora());
         partida.setEstadio(partidaDto.getEstadio());
         partidaRepository.save(partida);
-        return "Partida" + partida.getId() + " adicionada! ";
+        return "Partida" + partida.getId() + " adicionada! " + teste;
     }
 
     public ResponseEntity<?> deletaPartida(long id) {
@@ -66,8 +86,15 @@ public class PartidaService {
     }
 
     public ResponseEntity atualizaPartida(long id, PartidaDto partidaDto) {
-        LocalDateTime localDateTime = LocalDateTime.now();
+        if(verificaDuplicidadePartidaPorEstadio(partidaDto.getEstadio(), partidaDto.getDataHora())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não pode registrar a partida, pois já existe partida neste dia para o estádio informado");
+        }
 
+        if(verificaDuplicidadePartidaPorClube(partidaDto.getNomeClubeMandante(), partidaDto.getNomeClubeVisitante(), partidaDto.getDataHora())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não pode registrar a partida, pois já existe partida para este clube no período de dois dias");
+        }
+
+        LocalDateTime localDateTime = LocalDateTime.now();
         if(partidaDto.getDataHora().isAfter(localDateTime)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário da partida não pode ser maior que o horário atual!");
         }
