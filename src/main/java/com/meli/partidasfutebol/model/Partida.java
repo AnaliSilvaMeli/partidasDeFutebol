@@ -84,4 +84,17 @@ public class Partida {
     public void setEstadio(String estadio) {
         this.estadio = estadio;
     }
+
+    @Override
+    public String toString() {
+        return "Partida{" +
+                "id=" + id +
+                ", nomeClubeMandante='" + nomeClubeMandante + '\'' +
+                ", resultadoClubeMandante=" + resultadoClubeMandante +
+                ", nomeClubeVisitante='" + nomeClubeVisitante + '\'' +
+                ", resultadoClubeVisitante=" + resultadoClubeVisitante +
+                ", dataHora=" + dataHora +
+                ", estadio='" + estadio + '\'' +
+                '}';
+    }
 }

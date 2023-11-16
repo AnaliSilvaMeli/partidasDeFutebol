@@ -62,7 +62,7 @@ public class PartidaController {
     }
 
     @PutMapping(value="/{id}")
-    public ResponseEntity atualizaPartida(@PathVariable("id") long id,
+    public ResponseEntity<?> atualizaPartida(@PathVariable("id") long id,
                                 @Valid @RequestBody PartidaDto partidaDto) {
         return partidaService.atualizaPartida(id, partidaDto);
     }

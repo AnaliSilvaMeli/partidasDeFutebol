@@ -2,6 +2,8 @@ package com.meli.partidasfutebol.repository;
 
 import com.meli.partidasfutebol.dto.PartidaDto;
 import com.meli.partidasfutebol.model.Partida;
+import com.meli.partidasfutebol.service.PartidaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,9 +12,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface PartidaRepository extends JpaRepository<Partida, Long> {
+
     @Query("SELECT p FROM Partida p WHERE p.resultadoClubeMandante = 0 AND p.resultadoClubeVisitante = 0")
     List<Partida> buscaPartidaSemGols();
 

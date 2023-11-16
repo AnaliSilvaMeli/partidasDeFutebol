@@ -18,8 +18,11 @@ import java.util.Optional;
 @Service
 public class PartidaService {
 
-    @Autowired
     private PartidaRepository partidaRepository;
+    public PartidaService(PartidaRepository partidaRepository){
+        this.partidaRepository = partidaRepository;
+    }
+
 
     private Boolean verificaDuplicidadePartidaPorEstadio(String estadioNome , LocalDateTime dateTime){
         List<Partida> listaPartidasEstadio = partidaRepository.verificaDuplicidadePartidaPorEstadio(estadioNome,dateTime);
@@ -52,7 +55,6 @@ public class PartidaService {
         LocalTime apenasHora = LocalTime.parse(apenasHoraString);
         LocalTime horaMinimo = LocalTime.parse("08:00");
 
-        LocalDateTime teste = partidaDto.getDataHora().minusDays(2);
         if(apenasHora.isBefore(horaMinimo)){
             return "O horário de início da partida não pode ser antes das 08:00!";
         }
@@ -70,7 +72,7 @@ public class PartidaService {
         partida.setDataHora(partidaDto.getDataHora());
         partida.setEstadio(partidaDto.getEstadio());
         partidaRepository.save(partida);
-        return "Partida" + partida.getId() + " adicionada! " + teste;
+        return "Partida " + partida.getId() + " adicionada! ";
     }
 
     public ResponseEntity<?> deletaPartida(long id) {
