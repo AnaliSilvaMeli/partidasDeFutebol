@@ -1,6 +1,5 @@
 package com.meli.partidasfutebol.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

@@ -3,7 +3,6 @@ package com.meli.partidasfutebol.service;
 import com.meli.partidasfutebol.dto.PartidaDto;
 import com.meli.partidasfutebol.model.Partida;
 import com.meli.partidasfutebol.repository.PartidaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ public class PartidaService {
         this.partidaRepository = partidaRepository;
     }
 
-
     private Boolean verificaDuplicidadePartidaPorEstadio(String estadioNome , LocalDateTime dateTime){
         List<Partida> listaPartidasEstadio = partidaRepository.verificaDuplicidadePartidaPorEstadio(estadioNome,dateTime);
         return listaPartidasEstadio.size() > 0;
@@ -35,6 +33,28 @@ public class PartidaService {
         List<Partida> listaPartidasClube = partidaRepository.verificaDuplicidadePartidaPorClube(clubeMandante, clubeVisitante, dataVerificadaMinima, dataVerificadaMaxima);
         return listaPartidasClube.size() > 0;
     }
+
+    public Boolean verificaCadastroAposDataHoraAtual(LocalDateTime dateTime){
+        LocalDateTime dataHoraAtual = LocalDateTime.now();
+        return dateTime.isAfter(dataHoraAtual);
+
+    }
+
+    public Boolean verificaCadastroAntesHoraPossivel(LocalDateTime data){
+        String dataHoraString = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        String apenasHoraString = dataHoraString.substring(11, 19);
+        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
+        LocalTime horaMinimo = LocalTime.parse("08:00");
+        return apenasHora.isBefore(horaMinimo);
+    }
+    public Boolean verificaCadastroDepoisHoraPossivel(LocalDateTime data){
+        String dataHoraString = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        String apenasHoraString = dataHoraString.substring(11, 19);
+        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
+        LocalTime dataHoraMaximo = LocalTime.parse("22:00");
+        return apenasHora.isAfter(dataHoraMaximo);
+    }
+
     public String adicionaPartida(PartidaDto partidaDto){
         if(verificaDuplicidadePartidaPorEstadio(partidaDto.getEstadio(), partidaDto.getDataHora())){
             return "Não pode registrar a partida, pois já existe partida neste dia para o estádio informado";
@@ -44,23 +64,16 @@ public class PartidaService {
             return "Não pode registrar a partida, pois já existe partida para este clube no período de dois dias";
         }
 
-        LocalDateTime dataHoraAtual = LocalDateTime.now();
-        if(partidaDto.getDataHora().isAfter(dataHoraAtual)){
-           return "A data e hora da partida não pode ser maior que a data e hora atual!";
+        if(verificaCadastroAposDataHoraAtual(partidaDto.getDataHora())){
+            return "A data e hora da partida não pode ser maior que a data e hora atual!";
         }
 
-        LocalDateTime horaCadastrada = partidaDto.getDataHora();
-        String dataHoraString = horaCadastrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-        String apenasHoraString = dataHoraString.substring(11, 19);
-        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
-        LocalTime horaMinimo = LocalTime.parse("08:00");
-
-        if(apenasHora.isBefore(horaMinimo)){
+        if(verificaCadastroAntesHoraPossivel(partidaDto.getDataHora())){
             return "O horário de início da partida não pode ser antes das 08:00!";
         }
 
-        LocalTime dataHoraMaximo = LocalTime.parse("22:00");
-        if(apenasHora.isAfter(dataHoraMaximo)){
+
+        if(verificaCadastroDepoisHoraPossivel(partidaDto.getDataHora())){
             return "O horário de início da partida não pode ser após às 22:00!";
         }
 
@@ -96,22 +109,15 @@ public class PartidaService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não pode registrar a partida, pois já existe partida para este clube no período de dois dias");
         }
 
-        LocalDateTime localDateTime = LocalDateTime.now();
-        if(partidaDto.getDataHora().isAfter(localDateTime)){
+        if(verificaCadastroAposDataHoraAtual(partidaDto.getDataHora())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário da partida não pode ser maior que o horário atual!");
         }
 
-        LocalDateTime horaCadastrada = partidaDto.getDataHora();
-        String dataHoraString = horaCadastrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-        String apenasHoraString = dataHoraString.substring(11, 19);
-        LocalTime apenasHora = LocalTime.parse(apenasHoraString);
-        LocalTime horaMinimo = LocalTime.parse("08:00");
-        if(apenasHora.isBefore(horaMinimo)){
+        if(verificaCadastroAntesHoraPossivel(partidaDto.getDataHora())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário de início da partida não pode ser antes das 08:00!");
         }
 
-        LocalTime dataHoraMaximo = LocalTime.parse("22:00");
-        if(apenasHora.isAfter(dataHoraMaximo)){
+        if(verificaCadastroDepoisHoraPossivel(partidaDto.getDataHora())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O horário de início da partida não pode ser após às 22:00!");
         }
 
